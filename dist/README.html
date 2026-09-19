@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>md2html 使用说明</title>
+<style>
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f8f8f8; }
+.highlight .c { color: #3D7B7B; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #F00 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666 } /* Operator */
+.highlight .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #9C6500 } /* Comment.Preproc */
+.highlight .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.highlight .gr { color: #E40000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #008400 } /* Generic.Inserted */
+.highlight .go { color: #717171 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #04D } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #687822 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #00F; font-weight: bold } /* Name.Class */
+.highlight .no { color: #800 } /* Name.Constant */
+.highlight .nd { color: #A2F } /* Name.Decorator */
+.highlight .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #00F } /* Name.Function */
+.highlight .nl { color: #767600 } /* Name.Label */
+.highlight .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #BBB } /* Text.Whitespace */
+.highlight .mb { color: #666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666 } /* Literal.Number.Float */
+.highlight .mh { color: #666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #A45A77 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #00F } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666 } /* Literal.Number.Integer.Long */
+:root { color-scheme: light; }
+body {
+  max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 6rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  line-height: 1.75; color: #24292f; word-wrap: break-word;
+}
+h1, h2, h3, h4 { line-height: 1.3; margin-top: 1.6em; }
+h1 { border-bottom: 1px solid #d0d7de; padding-bottom: .3em; }
+h2 { border-bottom: 1px solid #eaeef2; padding-bottom: .3em; }
+a { color: #0969da; }
+pre { background: #f6f8fa; padding: 1rem 1.2rem; border-radius: 6px;
+      overflow-x: auto; font-size: .875em; line-height: 1.5; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+:not(pre) > code { background: rgba(27,31,35,.06); padding: .2em .4em;
+                   border-radius: 4px; font-size: .875em; }
+blockquote { margin: 0; padding: 0 1em; color: #57606a;
+             border-left: .25em solid #d0d7de; }
+table { border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { border: 1px solid #d0d7de; padding: .4em .8em; }
+th { background: #f6f8fa; }
+img { max-width: 100%; }
+hr { border: 0; border-top: 1px solid #d0d7de; margin: 2rem 0; }
+.toc { background: #f6f8fa; border-radius: 6px; padding: 1rem 1.5rem;
+       margin-bottom: 2rem; }
+.toc > ul { padding-left: 1.2rem; }
+.toc li { margin: .15rem 0; }
+</style>
+</head>
+<body>
+<div class="toc">
+<ul>
+<li><a href="#_1">一、快速开始</a></li>
+<li><a href="#_2">二、目录结构</a></li>
+<li><a href="#_3">三、配置字段</a></li>
+<li><a href="#_4">四、图片模式详解</a><ul>
+<li><a href="#1">模式 1 —— 不展示图片</a></li>
+<li><a href="#2">模式 2 —— 引用图片</a></li>
+<li><a href="#3-datajs">模式 3 —— data.js</a></li>
+<li><a href="#4-base64">模式 4 —— Base64 内嵌（默认）</a></li>
+</ul>
+</li>
+<li><a href="#_5">五、命令行选项</a></li>
+<li><a href="#_6">六、批量模式</a></li>
+<li><a href="#_7">七、自举说明</a></li>
+<li><a href="#_8">八、常见问题（使用相关）</a></li>
+<li><a href="#_9">九、依赖与许可</a></li>
+<li><a href="#a">附录 A：环境准备</a><ul>
+<li><a href="#a1-python">A.1 检查是否已装 Python</a></li>
+<li><a href="#a2-python">A.2 安装 Python（没有或版本过低）</a><ul>
+<li><a href="#windows">Windows</a></li>
+<li><a href="#macos">macOS</a></li>
+<li><a href="#linuxdebianubuntu">Linux（Debian/Ubuntu）</a></li>
+</ul>
+</li>
+<li><a href="#a3">A.3 安装项目依赖</a><ul>
+<li><a href="#a_1">方式 A：使用虚拟环境（推荐）</a></li>
+<li><a href="#b">方式 B：直接装到全局（简单但有风险）</a></li>
+<li><a href="#_10">国内网络加速</a></li>
+</ul>
+</li>
+<li><a href="#a4">A.4 验证安装</a></li>
+</ul>
+</li>
+<li><a href="#b_1">附录 B：安装问题排查</a></li>
+<li><a href="#cmarkdown">附录 C：Markdown 常见语法速查</a><ul>
+<li><a href="#c1">C.1 标题</a></li>
+<li><a href="#c2">C.2 段落与换行</a></li>
+<li><a href="#c3">C.3 强调</a></li>
+<li><a href="#c4">C.4 列表</a></li>
+<li><a href="#c5">C.5 链接与图片</a></li>
+<li><a href="#c6">C.6 代码</a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+<h1 id="md2html">md2html 使用说明</h1>
+<p>一个把 Markdown 文档转成 HTML 的小工具。通过一份 JSON 文件配置输入输出，
+支持 4 种图片处理方式，可生成<strong>单文件自包含</strong>的 HTML，也可以生成引用外链资源、
+或使用独立 <code>data.js</code> 的轻量方案。</p>
+<p><strong>核心特性</strong></p>
+<ul>
+<li><strong>JSON 配置驱动</strong>：输入、输出、标题、目录、图片模式都在一个文件里</li>
+<li><strong>4 种图片模式</strong>：不展示 / 引用 / data.js / Base64 内嵌</li>
+<li><strong>代码高亮</strong>：基于 Pygments，可选开关</li>
+<li><strong>目录生成</strong>：自动从标题层级生成 TOC</li>
+<li><strong>批量模式</strong>：一份配置处理多个 Markdown 文件</li>
+<li><strong>纯 Python</strong>：无外部二进制依赖</li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>📌 阅读指引</strong></p>
+<p>本文档假设你的电脑<strong>已经装好 Python 3.9+ 和项目依赖</strong>。</p>
+<ul>
+<li>如果<strong>环境已就绪</strong> → 直接从 <a href="#sec-quickstart">一、快速开始</a> 看起</li>
+<li>如果<strong>还没装 Python 或不确定</strong> → 先看 <a href="#appendix-env">附录 A：环境准备</a></li>
+<li>如果<strong>安装过程报错</strong> → 直接查 <a href="#appendix-install-faq">附录 B：安装问题排查</a></li>
+<li>如果<strong>不熟悉 Markdown 语法</strong> → 见 <a href="#appendix-md-syntax">附录 C：语法速查</a></li>
+</ul>
+</blockquote>
+<hr>
+<p><a id="sec-quickstart"></a></p>
+<h2 id="_1">一、快速开始</h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. 用默认配置转换 README.md</span>
+python<span class="w"> </span>md2html.py<span class="w"> </span>config.json
+
+<span class="c1"># 2. 打开生成的 HTML</span>
+<span class="c1"># dist/README.html</span>
+</code></pre></div>
+
+<p>如果这条命令报错，先确认环境是否就绪：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>md2html.py<span class="w"> </span>config.json<span class="w"> </span>--help-modes
+</code></pre></div>
+
+<p>能打印出 <code>image_mode</code> 的 4 种说明，就说明一切正常。否则看 <a href="#appendix-env">附录 A</a>。</p>
+<h2 id="_2">二、目录结构</h2>
+<div class="highlight"><pre><span></span><code>md2html-project/
+├── md2html.py      # 主程序
+├── config.json     # 配置文件
+├── README.md       # 本说明文档
+└── dist/           # 运行后生成
+    ├── README.html
+    └── data.js     # 模式 3 时才会出现
+</code></pre></div>
+
+<h2 id="_3">三、配置字段</h2>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input</code></td>
+<td>string</td>
+<td>输入的 Markdown 文件路径，相对 JSON 文件所在目录</td>
+</tr>
+<tr>
+<td><code>output</code></td>
+<td>string</td>
+<td>输出的 HTML 文件路径，相对 JSON 文件所在目录</td>
+</tr>
+<tr>
+<td><code>output_dir</code></td>
+<td>string</td>
+<td>只给目录时，输出文件名取输入文件的同名 <code>.html</code></td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>string</td>
+<td>HTML 的 <code>&lt;title&gt;</code>，默认取输入文件名</td>
+</tr>
+<tr>
+<td><code>toc</code></td>
+<td>bool</td>
+<td>是否在正文前插入目录</td>
+</tr>
+<tr>
+<td><code>toc_depth</code></td>
+<td>string</td>
+<td>目录包含的标题层级，如 <code>"2-4"</code></td>
+</tr>
+<tr>
+<td><code>highlight</code></td>
+<td>bool</td>
+<td>是否启用代码语法高亮</td>
+</tr>
+<tr>
+<td><code>fragment</code></td>
+<td>bool</td>
+<td><code>true</code> 则只输出正文片段，不套完整页面</td>
+</tr>
+<tr>
+<td><code>image_mode</code></td>
+<td>int</td>
+<td>图片处理模式，取值 <code>1</code> / <code>2</code> / <code>3</code> / <code>4</code>，详见下节</td>
+</tr>
+<tr>
+<td><code>image_root</code></td>
+<td>string</td>
+<td>模式 2 专用，磁盘上图片的根目录</td>
+</tr>
+<tr>
+<td><code>html_image_base</code></td>
+<td>string</td>
+<td>模式 2 专用，URL 前缀</td>
+</tr>
+<tr>
+<td><code>data_js_output</code></td>
+<td>string</td>
+<td>模式 3 专用，<code>data.js</code> 输出路径</td>
+</tr>
+<tr>
+<td><code>说明</code></td>
+<td>object</td>
+<td>纯文档字段，程序不读取，仅供人看</td>
+</tr>
+<tr>
+<td><code>defaults</code></td>
+<td>object</td>
+<td>批量模式下的公共配置</td>
+</tr>
+<tr>
+<td><code>jobs</code></td>
+<td>array</td>
+<td>批量模式下每个文件一项</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">四、图片模式详解</h2>
+<p><code>image_mode</code> 决定了 HTML 里的 <code>&lt;img&gt;</code> 标签最终长什么样。
+数字不太直观，所以 <code>config.json</code> 的 <code>说明.image_mode</code> 里写明了每个值的含义，
+程序报错时也会自动把对应解释打印出来。</p>
+<h3 id="1">模式 1 —— 不展示图片</h3>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">"image_mode"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+
+<p>所有 <code>&lt;img&gt;</code> 标签被删除，适合生成纯文字版本，或屏蔽敏感图。</p>
+<h3 id="2">模式 2 —— 引用图片</h3>
+<p>适合把 HTML 和图片资源分开部署，要求图片集中在一个根目录下。</p>
+<p>假设目录结构：</p>
+<div class="highlight"><pre><span></span><code>project/
+├── config.json
+├── docs/
+│   ├── guide.md          # 里面写 ![](images/logo.png)
+│   └── images/
+│       └── logo.png
+└── dist/
+    └── guide.html        # 输出目标
+</code></pre></div>
+
+<p>配置：</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"docs/guide.md"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"output"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dist/guide.html"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"image_mode"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"image_root"</span><span class="p">:</span><span class="w"> </span><span class="s2">"docs"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"html_image_base"</span><span class="p">:</span><span class="w"> </span><span class="s2">"../docs"</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<ul>
+<li><code>image_root</code>：磁盘上图片根目录，用来校验文件是否存在</li>
+<li><code>html_image_base</code>：从 HTML 出发到 <code>image_root</code> 的 URL 相对路径</li>
+</ul>
+<p>生成的 <code>&lt;img&gt;</code> 会变成 <code>src="../docs/images/logo.png"</code>，浏览器打开正常显示。</p>
+<h3 id="3-datajs">模式 3 —— data.js</h3>
+<p>把图片全部编码成 Base64 塞进一个独立的 <code>data.js</code>，HTML 里只留占位图和一个脚本引用。
+适合图片多、又想让 HTML 保持轻量的场景。</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"README.md"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"output"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dist/README.html"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"image_mode"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"data_js_output"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dist/data.js"</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>结果：</p>
+<ul>
+<li><code>dist/README.html</code>：<code>&lt;img src="data:image/gif;base64,..." data-md-asset="images/logo.png"&gt;</code></li>
+<li><code>dist/data.js</code>：<code>window.__MD_ASSETS__ = { "images/logo.png": "data:image/png;base64,..." }</code></li>
+<li>HTML 末尾自动追加 <code>&lt;script src="data.js"&gt;&lt;/script&gt;</code></li>
+</ul>
+<p>页面加载时 JS 用真实图片替换占位图。</p>
+<blockquote>
+<p>注意：此模式强依赖 JavaScript。如果用户禁用 JS，图片不会显示。</p>
+</blockquote>
+<h3 id="4-base64">模式 4 —— Base64 内嵌（默认）</h3>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">"image_mode"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+
+<p>所有图片直接内嵌为 <code>data:</code> URI，生成的 HTML <strong>单文件自包含</strong>，随便移动、发给别人都能正常打开。</p>
+<p>代价是文件体积会膨胀约 33%，图片多时会明显变慢。</p>
+<h2 id="_5">五、命令行选项</h2>
+<div class="highlight"><pre><span></span><code>python md2html.py &lt;config.json&gt; [选项]
+
+选项:
+  --help-modes            打印 image_mode 的说明并退出
+  --image-mode MODE       覆盖配置里的 image_mode
+  --input FILE            覆盖配置里的 input（仅单任务）
+  --output FILE           覆盖配置里的 output（仅单任务）
+  --title TITLE           覆盖标题
+  --toc                   强制开启目录
+  --no-highlight          关闭代码高亮
+  --fragment              只输出正文片段
+</code></pre></div>
+
+<h2 id="_6">六、批量模式</h2>
+<p><code>jobs</code> 是一个数组，每一项独立处理；<code>defaults</code> 是公共默认值，可被 job 覆盖。</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"defaults"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"output_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dist"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"toc"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"image_mode"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"jobs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"README.md"</span><span class="p">,</span><span class="w"> </span><span class="nt">"output"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dist/index.html"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"首页"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"docs/guide.md"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"使用指南"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"docs/api.md"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"API 参考"</span><span class="p">,</span><span class="w"> </span><span class="nt">"image_mode"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"image_root"</span><span class="p">:</span><span class="w"> </span><span class="s2">"docs"</span><span class="p">,</span><span class="w"> </span><span class="nt">"html_image_base"</span><span class="p">:</span><span class="w"> </span><span class="s2">"../docs"</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="_7">七、自举说明</h2>
+<p>本 README 本身就是一个 Markdown 文档。用项目自带的 <code>config.json</code> 转换后，
+<code>dist/README.html</code> 就是你现在可能正在看的这份说明。这既是使用示例，也是自测方式：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>md2html.py<span class="w"> </span>config.json
+</code></pre></div>
+
+<h2 id="_8">八、常见问题（使用相关）</h2>
+<p><strong>Q: 生成的 HTML 图片裂了？</strong></p>
+<p>A: 大概率是相对路径问题。检查 <code>image_mode</code>：
+- 模式 2：确认 <code>image_root</code> 和 <code>html_image_base</code> 是否配对
+- 模式 3：确认 <code>data.js</code> 和 HTML 是否在同一目录或路径正确
+- 模式 4：应该不会裂；如果裂了，看程序是否打印了"图片不存在"警告</p>
+<p><strong>Q: 报错 <code>未知的 image_mode</code>？</strong></p>
+<p>A: 用 <code>python md2html.py config.json --help-modes</code> 看可选值。数字或别名
+（<code>none</code> / <code>reference</code> / <code>datajs</code> / <code>base64</code>）都可以。</p>
+<p><strong>Q: 输出的 HTML 是片段，我要嵌到别的页面里？</strong></p>
+<p>A: 加 <code>"fragment": true</code>，或命令行加 <code>--fragment</code>。</p>
+<p><strong>Q: 中文路径 / 中文文件名会有问题吗？</strong></p>
+<p>A: Python 3 原生支持 UTF-8 路径，正常情况没问题。如果 Windows 上报编码错误，
+在运行前执行 <code>chcp 65001</code> 把终端切到 UTF-8。</p>
+<p><strong>Q: 不想装 <code>pygments</code> 可以吗？</strong></p>
+<p>A: 可以。程序检测不到时会自动关闭高亮，只保留基础样式。
+用 <code>--no-highlight</code> 显式关闭效果相同。</p>
+<h2 id="_9">九、依赖与许可</h2>
+<p><strong>依赖</strong></p>
+<ul>
+<li><strong>Python 3.9+</strong>（必需）</li>
+<li><strong>markdown</strong>（必需）</li>
+<li><strong>pygments</strong>（可选，用于代码高亮）</li>
+</ul>
+<p><strong>许可</strong></p>
+<p>MIT</p>
+<hr>
+<p><a id="appendix-env"></a></p>
+<h2 id="a">附录 A：环境准备</h2>
+<blockquote>
+<p>本节是<strong>前置条件说明</strong>，仅在电脑上没有 Python 3.9+ 或依赖时阅读。
+环境已就绪的读者可跳过。</p>
+</blockquote>
+<h3 id="a1-python">A.1 检查是否已装 Python</h3>
+<p>打开终端（Windows 用 PowerShell 或 CMD，macOS/Linux 用 Terminal），执行：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>--version
+</code></pre></div>
+
+<p>或（某些系统上 Python 3 叫 <code>python3</code>）：</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>--version
+</code></pre></div>
+
+<p><strong>期望输出</strong>类似 <code>Python 3.9.x</code> 或更高。</p>
+<ul>
+<li>如果<strong>显示了 3.9 以上版本</strong> → 跳到 <a href="#appendix-env-deps">A.3 安装依赖</a></li>
+<li>如果<strong>提示"找不到命令"或版本低于 3.9</strong> → 继续看 A.2</li>
+</ul>
+<blockquote>
+<p>为什么要求 3.9+？程序用到了 <code>dict[str, str]</code> 这类内置泛型语法，
+该语法从 Python 3.9 开始支持。3.8 及以下会直接语法报错。</p>
+</blockquote>
+<h3 id="a2-python">A.2 安装 Python（没有或版本过低）</h3>
+<h4 id="windows">Windows</h4>
+<ol>
+<li>打开 <a href="https://www.python.org/downloads/windows/">https://www.python.org/downloads/windows/</a>，下载最新的
+   <strong>Windows installer (64-bit)</strong>。</li>
+<li>运行安装包，<strong>务必勾选 "Add Python to PATH"</strong>（在第一个界面底部），
+   然后点 "Install Now"。</li>
+<li>安装完成后<strong>关闭并重新打开 PowerShell</strong>，再执行：</li>
+</ol>
+<p><code>bash
+   python --version</code></p>
+<p>应该看到版本号。如果仍然找不到，试试：</p>
+<p><code>bash
+   py --version</code></p>
+<p><code>py</code> 是 Windows 自带的 Python 启动器，即使 PATH 没配好也能用。</p>
+<ol start="4">
+<li><strong>记住这个差异</strong>：后面所有命令里的 <code>python</code>，如果你的系统只认 <code>py</code>，
+   就统一换成 <code>py</code>。例如 <code>py md2html.py config.json</code>。</li>
+</ol>
+<h4 id="macos">macOS</h4>
+<p>推荐用 Homebrew 安装（版本更新、更好管理）：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 如果还没装 Homebrew</span>
+/bin/bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">"</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="k">)</span><span class="s2">"</span>
+
+<span class="c1"># 安装 Python</span>
+brew<span class="w"> </span>install<span class="w"> </span>python
+</code></pre></div>
+
+<p>验证：</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>--version
+</code></pre></div>
+
+<p>macOS 上默认没有 <code>python</code> 命令，只有 <code>python3</code>。后文命令里的 <code>python</code>
+请自行替换成 <code>python3</code>。</p>
+<h4 id="linuxdebianubuntu">Linux（Debian/Ubuntu）</h4>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-venv
+</code></pre></div>
+
+<p>验证：</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>--version
+pip3<span class="w"> </span>--version
+</code></pre></div>
+
+<p>CentOS / Fedora 用 <code>sudo dnf install python3 python3-pip</code>。</p>
+<p><a id="appendix-env-deps"></a></p>
+<h3 id="a3">A.3 安装项目依赖</h3>
+<p>依赖只有两个：</p>
+<table>
+<thead>
+<tr>
+<th>包</th>
+<th>是否必需</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>markdown</code></td>
+<td>必需</td>
+<td>解析 Markdown 并输出 HTML</td>
+</tr>
+<tr>
+<td><code>pygments</code></td>
+<td>可选</td>
+<td>代码块语法高亮</td>
+</tr>
+</tbody>
+</table>
+<h4 id="a_1">方式 A：使用虚拟环境（推荐）</h4>
+<p>虚拟环境能避免污染系统 Python，也避免"权限不足"报错。
+只需多两条命令：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. 在项目目录下创建虚拟环境</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+
+<span class="c1"># 2. 激活它</span>
+<span class="c1">#    Windows PowerShell:</span>
+.venv<span class="se">\S</span>cripts<span class="se">\A</span>ctivate.ps1
+<span class="c1">#    Windows CMD:</span>
+.venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate.bat
+<span class="c1">#    macOS / Linux:</span>
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+
+<span class="c1"># 激活后命令提示符前会出现 (.venv)，说明生效了</span>
+<span class="c1"># 3. 安装依赖</span>
+pip<span class="w"> </span>install<span class="w"> </span>markdown<span class="w"> </span>pygments
+</code></pre></div>
+
+<p>以后每次打开新终端，都要先执行激活命令，再运行程序。
+不想用了直接删掉 <code>.venv</code> 目录即可。</p>
+<h4 id="b">方式 B：直接装到全局（简单但有风险）</h4>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>markdown<span class="w"> </span>pygments
+</code></pre></div>
+
+<p>如果报 <code>Permission denied</code> 或 <code>Access is denied</code>，说明没有写系统目录的权限。
+两个选择：</p>
+<ul>
+<li>加 <code>--user</code> 装到用户目录：<code>pip install --user markdown pygments</code></li>
+<li>老老实实回到方式 A 用虚拟环境</li>
+</ul>
+<h4 id="_10">国内网络加速</h4>
+<p>pip 直连官方源可能很慢或超时，换清华镜像：</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>markdown<span class="w"> </span>pygments<span class="w"> </span>-i<span class="w"> </span>https://pypi.tuna.tsinghua.edu.cn/simple
+</code></pre></div>
+
+<p>想永久配置：</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span>global.index-url<span class="w"> </span>https://pypi.tuna.tsinghua.edu.cn/simple
+</code></pre></div>
+
+<h3 id="a4">A.4 验证安装</h3>
+<p>一条命令搞定：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import markdown, pygments; print('依赖正常')"</span>
+</code></pre></div>
+
+<p>期望输出 <code>依赖正常</code>。</p>
+<p>再确认程序本身可用：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>md2html.py<span class="w"> </span>config.json<span class="w"> </span>--help-modes
+</code></pre></div>
+
+<p>应该打印出 <code>image_mode</code> 的 4 种说明。<strong>看到这个输出，说明环境已经就绪。</strong></p>
+<p><a id="appendix-install-faq"></a></p>
+<h2 id="b_1">附录 B：安装问题排查</h2>
+<blockquote>
+<p>安装过程中遇到报错时查阅。使用过程中的问题见 <a href="#八常见问题使用相关">八、常见问题</a>。</p>
+</blockquote>
+<p><strong>Q: 提示 <code>python: command not found</code> / <code>'python' 不是内部或外部命令</code>？</strong></p>
+<p>A: 分两种情况：
+- <strong>Windows</strong>：先试 <code>py --version</code>。能用就把后面所有命令的 <code>python</code> 换成 <code>py</code>。
+  如果 <code>py</code> 也不行，说明安装时没勾 "Add Python to PATH"，重装一次并勾上。
+- <strong>macOS / Linux</strong>：Python 3 通常叫 <code>python3</code>，把命令换成 <code>python3</code> 和 <code>pip3</code>。</p>
+<p><strong>Q: 提示 <code>No module named markdown</code>？</strong></p>
+<p>A: 依赖没装，或装到了另一个 Python 环境里。确认：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 看当前 pip 属于哪个 Python</span>
+pip<span class="w"> </span>--version
+<span class="c1"># 看当前 python 能不能 import</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import markdown"</span>
+</code></pre></div>
+
+<p>如果 <code>pip --version</code> 显示的路径和 <code>python</code> 不是一个环境，用
+<code>python -m pip install markdown</code> 强制绑定到当前解释器。</p>
+<p><strong>Q: 用了虚拟环境，但下次打开终端又提示找不到 markdown？</strong></p>
+<p>A: 虚拟环境不会自动激活。每次新开终端都要先执行
+<code>.venv\Scripts\Activate.ps1</code>（Windows）或 <code>source .venv/bin/activate</code>（macOS/Linux）。
+看到提示符前有 <code>(.venv)</code> 才是激活成功。</p>
+<p><strong>Q: <code>pip install</code> 卡住不动或超时？</strong></p>
+<p>A: 大概率是网络问题，换国内镜像：</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>markdown<span class="w"> </span>pygments<span class="w"> </span>-i<span class="w"> </span>https://pypi.tuna.tsinghua.edu.cn/simple
+</code></pre></div>
+
+<p><strong>Q: 提示 <code>pip: command not found</code>？</strong></p>
+<p>A: 用 <code>python -m pip</code> 替代 <code>pip</code>，这条命令在任何装好 Python 的环境都能用。
+如果连 <code>python -m pip</code> 都不行，Linux 上需要额外装：<code>sudo apt install python3-pip</code>。</p>
+<p><strong>Q: 虚拟环境激活时提示"禁止运行脚本"（Windows PowerShell）？</strong></p>
+<p>A: PowerShell 默认限制执行脚本。临时放开：</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Set-ExecutionPolicy</span> <span class="n">-Scope</span> <span class="k">Process</span> <span class="n">-ExecutionPolicy</span> <span class="n">Bypass</span>
+</code></pre></div>
+
+<p>或者直接用 CMD 激活：<code>.venv\Scripts\activate.bat</code>。</p>
+<p><a id="appendix-md-syntax"></a></p>
+<h2 id="cmarkdown">附录 C：Markdown 常见语法速查</h2>
+<blockquote>
+<p>仅列出本项目实际支持、且日常最常用的语法。完整规范见
+<a href="https://commonmark.org/help/">CommonMark</a> 与
+<a href="https://github.github.com/gfm/">GitHub Flavored Markdown</a>。</p>
+</blockquote>
+<h3 id="c1">C.1 标题</h3>
+<p>用 <code>#</code> 到 <code>######</code> 表示 1 到 6 级标题，<code>#</code> 后面要有一个空格。</p>
+<div class="highlight"><pre><span></span><code><span class="gh"># 一级标题</span>
+<span class="gu">## 二级标题</span>
+<span class="gu">### 三级标题</span>
+</code></pre></div>
+
+<blockquote>
+<p><strong>本项目相关</strong>：<code>toc: true</code> 时，<code>toc_depth</code> 控制哪些层级的标题进入目录，
+默认 <code>"2-4"</code> 表示只收录 2 到 4 级标题。</p>
+</blockquote>
+<h3 id="c2">C.2 段落与换行</h3>
+<ul>
+<li><strong>段落</strong>：连续文本之间用<strong>空行</strong>分隔。</li>
+<li><strong>换行</strong>：行末加<strong>两个空格</strong>，或直接留一个空行另起一段。</li>
+<li>不建议用 <code>\</code> 硬换行，跨平台兼容性差。</li>
+</ul>
+<div class="highlight"><pre><span></span><code>第一段。
+
+第二段，和上一段之间隔了一个空行。
+</code></pre></div>
+
+<h3 id="c3">C.3 强调</h3>
+<table>
+<thead>
+<tr>
+<th>语法</th>
+<th>效果</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*斜体*</code></td>
+<td><em>斜体</em></td>
+<td>单个星号</td>
+</tr>
+<tr>
+<td><code>**粗体**</code></td>
+<td><strong>粗体</strong></td>
+<td>两个星号</td>
+</tr>
+<tr>
+<td><code>***粗斜体***</code></td>
+<td><strong><em>粗斜体</em></strong></td>
+<td>三个星号</td>
+</tr>
+<tr>
+<td><code>~~删除线~~</code></td>
+<td>~~删除线~~</td>
+<td>需要 GFM 扩展</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>星号和下划线（<code>_</code>）都可用，但<strong>中文场景推荐用星号</strong>，
+因为下划线容易和变量名混淆。</p>
+</blockquote>
+<h3 id="c4">C.4 列表</h3>
+<p><strong>无序列表</strong>：用 <code>-</code>、<code>*</code> 或 <code>+</code>（同一份文档内保持一致）。</p>
+<div class="highlight"><pre><span></span><code><span class="k">-</span><span class="w"> </span>苹果
+<span class="k">-</span><span class="w"> </span>香蕉
+<span class="k">-</span><span class="w"> </span>橘子
+</code></pre></div>
+
+<p><strong>有序列表</strong>：用数字加英文句点。起始数字会自动递增，不用手动编号。</p>
+<div class="highlight"><pre><span></span><code><span class="k">1.</span> 第一步
+<span class="k">2.</span> 第二步
+<span class="k">3.</span> 第三步
+</code></pre></div>
+
+<p><strong>嵌套</strong>：子项缩进 2 或 4 个空格。</p>
+<div class="highlight"><pre><span></span><code><span class="k">-</span><span class="w"> </span>前端
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>HTML
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>CSS
+<span class="k">-</span><span class="w"> </span>后端
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>Python
+</code></pre></div>
+
+<blockquote>
+<p><strong>本项目相关</strong>：<code>sane_lists</code> 扩展已启用，混用不同符号或缩进不规范时，
+会按更严格的标准解析，避免出现意外的嵌套。</p>
+</blockquote>
+<h3 id="c5">C.5 链接与图片</h3>
+<p><strong>链接</strong>：</p>
+<div class="highlight"><pre><span></span><code>[<span class="nt">显示文字</span>](<span class="na">https://example.com</span>)
+[<span class="nt">带标题的链接</span>](<span class="na">https://example.com "鼠标悬停提示"</span>)
+</code></pre></div>
+
+<p><strong>图片</strong>：在链接语法前加一个 <code>!</code>。</p>
+<div class="highlight"><pre><span></span><code>![<span class="nt">替代文字</span>](<span class="na">images/logo.png</span>)
+![<span class="nt">带标题</span>](<span class="na">images/logo.png "Logo"</span>)
+</code></pre></div>
+
+<blockquote>
+<p><strong>本项目相关</strong>：<code>image_mode</code> 决定图片路径如何处理。写作时<strong>建议用相对路径</strong>
+（如 <code>images/logo.png</code>），程序才能定位到磁盘文件。用绝对 URL 的图片会原样保留。</p>
+</blockquote>
+<h3 id="c6">C.6 代码</h3>
+<p><strong>行内代码</strong>：用<strong>单个反引号</strong>包裹。</p>
+<div class="highlight"><pre><span></span><code>执行 <span class="sb">`pip install markdown`</span> 安装依赖。
+</code></pre></div>
+
+<p><strong>围栏代码块</strong>：用<strong>三个反引号</strong>包裹，可指定语言以启用高亮。</p>
+
+</body>
+</html>

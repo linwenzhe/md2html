@@ -1,0 +1,41 @@
+{
+  "说明": {
+    "概述": "本配置文件用于把 Markdown 转成 HTML。运行: python md2html.py config.json",
+    "image_mode": {
+      "1": "不展示图片：直接删除所有 <img> 标签",
+      "2": "引用图片：需额外配置 image_root 和 html_image_base",
+      "3": "data.js：图片存进独立 JS 文件，HTML 里用占位图 + 脚本替换",
+      "4": "Base64 内嵌：图片直接写进 HTML，单文件自包含（默认）"
+    },
+    "字段说明": {
+      "input": "输入的 Markdown 文件路径，相对本 JSON 文件所在目录",
+      "output": "输出的 HTML 文件路径，相对本 JSON 文件所在目录",
+      "output_dir": "只给目录时，输出文件名取输入文件的同名 .html",
+      "title": "HTML 的 <title>，默认取输入文件名",
+      "toc": "是否插入目录，true/false",
+      "toc_depth": "目录包含的标题层级，如 '2-4'",
+      "highlight": "是否启用代码高亮，true/false",
+      "fragment": "true 则只输出正文片段，不套完整页面",
+      "image_root": "模式 2 用：磁盘上图片的根目录，相对本 JSON 文件目录，仅用于校验",
+      "html_image_base": "模式 2 用：URL 前缀，从 HTML 出发到 image_root 的相对路径",
+      "data_js_output": "模式 3 用：data.js 的输出路径，省略则写在 HTML 同目录",
+      "defaults": "批量模式下的公共配置，会被每个 job 覆盖",
+      "jobs": "批量模式下每个文件一项的数组"
+    },
+    "常用命令": {
+      "转换": "python md2html.py config.json",
+      "查看模式说明": "python md2html.py config.json --help-modes",
+      "临时切模式": "python md2html.py config.json --image-mode 3",
+      "临时换文件": "python md2html.py config.json --input other.md"
+    }
+  },
+
+  "input": "README.md",
+  "output": "dist/README.html",
+  "title": "md2html 使用说明",
+  "toc": true,
+  "toc_depth": "2-4",
+  "highlight": true,
+
+  "image_mode": 4
+}

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>md2html 使用说明</title>
+<style>
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f8f8f8; }
+.highlight .c { color: #3D7B7B; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #F00 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666 } /* Operator */
+.highlight .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #9C6500 } /* Comment.Preproc */
+.highlight .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.highlight .gr { color: #E40000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #008400 } /* Generic.Inserted */
+.highlight .go { color: #717171 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #04D } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #687822 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #00F; font-weight: bold } /* Name.Class */
+.highlight .no { color: #800 } /* Name.Constant */
+.highlight .nd { color: #A2F } /* Name.Decorator */
+.highlight .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #00F } /* Name.Function */
+.highlight .nl { color: #767600 } /* Name.Label */
+.highlight .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #BBB } /* Text.Whitespace */
+.highlight .mb { color: #666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666 } /* Literal.Number.Float */
+.highlight .mh { color: #666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #A45A77 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #00F } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666 } /* Literal.Number.Integer.Long */
+:root { color-scheme: light; }
+body {
+  max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 6rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  line-height: 1.75; color: #24292f; word-wrap: break-word;
+}
+h1, h2, h3, h4 { line-height: 1.3; margin-top: 1.6em; }
+h1 { border-bottom: 1px solid #d0d7de; padding-bottom: .3em; }
+h2 { border-bottom: 1px solid #eaeef2; padding-bottom: .3em; }
+a { color: #0969da; }
+pre { background: #f6f8fa; padding: 1rem 1.2rem; border-radius: 6px;
+      overflow-x: auto; font-size: .875em; line-height: 1.5; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+:not(pre) > code { background: rgba(27,31,35,.06); padding: .2em .4em;
+                   border-radius: 4px; font-size: .875em; }
+blockquote { margin: 0; padding: 0 1em; color: #57606a;
+             border-left: .25em solid #d0d7de; }
+table { border-collapse: collapse; display: block; overflow-x: auto; }
+th, td { border: 1px solid #d0d7de; padding: .4em .8em; }
+th { background: #f6f8fa; }
+img { max-width: 100%; }
+hr { border: 0; border-top: 1px solid #d0d7de; margin: 2rem 0; }
+.toc { background: #f6f8fa; border-radius: 6px; padding: 1rem 1.5rem;
+       margin-bottom: 2rem; }
+.toc > ul { padding-left: 1.2rem; }
+.toc li { margin: .15rem 0; }
+</style>
+</head>
+<body>
+<div class="toc">
+<ul>
+<li><a href="#_1">一、实用价值：它解决了什么真实问题</a><ul>
+<li><a href="#1">1. 让文档脱离平台，变成“永远能打开”的东西</a></li>
+<li><a href="#2">2. 掌控渲染结果，不受第三方约束</a></li>
+<li><a href="#3">3. 把“写作”和“发布”分离</a></li>
+<li><a href="#4">4. 隐私敏感场景</a></li>
+</ul>
+</li>
+<li><a href="#_2">二、学习价值：作为一个练手项目</a></li>
+<li><a href="#_3">三、这个具体实现的独特价值</a><ul>
+<li><a href="#4-4">4 种图片模式覆盖了 4 种真实场景</a></li>
+<li><a href="#_4">配置驱动让它从“脚本”变成“工具”</a></li>
+</ul>
+</li>
+<li><a href="#_5">四、它不适合什么场景</a></li>
+<li><a href="#_6">五、总结</a></li>
+</ul>
+</div>
+
+<h1 id="markdown-html">Markdown 转 HTML 项目的价值</h1>
+<p>这个问题的价值可以从三个层次看：<strong>工具本身解决什么实际问题</strong>、<strong>作为一个练手项目能学到什么</strong>、<strong>以及这个具体实现（4 种图片模式 + 配置驱动）的独特价值</strong>。最后也会说清楚它<strong>不适合</strong>什么场景，避免高估。</p>
+<hr>
+<h2 id="_1">一、实用价值：它解决了什么真实问题</h2>
+<h3 id="1">1. 让文档脱离平台，变成“永远能打开”的东西</h3>
+<p>Markdown 源文件依赖编辑器（Typora、VS Code、Obsidian）才能看到排版。而 HTML 是<strong>浏览器原生支持</strong>的格式——十年后、换台电脑、换个系统，双击就能看。</p>
+<p>这对以下场景有实际意义：</p>
+<ul>
+<li><strong>归档技术文档</strong>：项目结束后，README、设计文档、API 说明打包成 HTML 存档，不依赖任何工具链。</li>
+<li><strong>交付给非技术方</strong>：客户、领导、合作方不一定会装 Markdown 编辑器，但一定会用浏览器。</li>
+<li><strong>离线阅读</strong>：模式 4 生成的单个 HTML 自包含，拷到 U 盘、发邮件、放进知识库都能看。</li>
+</ul>
+<h3 id="2">2. 掌控渲染结果，不受第三方约束</h3>
+<p>用 GitHub、语雀、Notion 渲染 Markdown 很方便，但：</p>
+<ul>
+<li>样式由平台决定，改不了</li>
+<li>平台改版，你的文档排版跟着变</li>
+<li>敏感内容上传到第三方有合规风险</li>
+<li>平台关停，链接全挂</li>
+</ul>
+<p>自己转 HTML，<strong>输出完全归你控制</strong>：CSS 怎么写、图片怎么处理、目录怎么生成，都是自己的。</p>
+<h3 id="3">3. 把“写作”和“发布”分离</h3>
+<p>Markdown 适合写作，HTML 适合发布。用这个工具，你可以：</p>
+<ul>
+<li><strong>写作时</strong>只关心内容，用任何顺手的编辑器</li>
+<li><strong>发布时</strong>一键转换，产出可分发、可托管、可打印的 HTML</li>
+</ul>
+<p>这是静态站点生成器（Hugo、VitePress）的核心思路，只不过那些工具更重，而这个脚本<strong>零依赖、即拿即用</strong>。</p>
+<h3 id="4">4. 隐私敏感场景</h3>
+<p>内部文档、合同草案、个人笔记，不想上传到任何在线服务。本地跑一个脚本，从 Markdown 到 HTML 全程不出本机，是唯一安全的选择。</p>
+<hr>
+<h2 id="_2">二、学习价值：作为一个练手项目</h2>
+<p>如果目的是“学编程”或“理解某个技术栈”，这个项目的价值可能比它的实用价值更大。</p>
+<table>
+<thead>
+<tr>
+<th>学到的东西</th>
+<th>在本项目中的体现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>解析器分层架构</strong></td>
+<td>Markdown → AST/Token → HTML 的三段式，是所有编译原理、模板引擎、DSL 的通用模式</td>
+</tr>
+<tr>
+<td><strong>正则处理文本</strong></td>
+<td>用正则改写 <code>&lt;img&gt;</code> 标签，理解“匹配—提取—替换”的套路</td>
+</tr>
+<tr>
+<td><strong>路径解析</strong></td>
+<td>相对路径 vs 绝对路径、<code>resolve()</code>、<code>relpath()</code>，是文件处理的基本功</td>
+</tr>
+<tr>
+<td><strong>配置驱动设计</strong></td>
+<td>硬编码 → JSON 配置 → 命令行覆盖，是工程化的必经之路</td>
+</tr>
+<tr>
+<td><strong>多模式策略</strong></td>
+<td>4 种图片模式用同一套接口，是策略模式、插件化的入门形态</td>
+</tr>
+<tr>
+<td><strong>自举验证</strong></td>
+<td>用自己的工具处理自己的文档，是“闭环测试”的绝佳示例</td>
+</tr>
+<tr>
+<td><strong>文档即交付</strong></td>
+<td>代码 + 配置 + README + 附录，理解一个完整项目长什么样</td>
+</tr>
+<tr>
+<td><strong>与 AI 协作</strong></td>
+<td>逐步加约束、主动查边界、要求交付件，是可复用的元技能</td>
+</tr>
+</tbody>
+</table>
+<p>尤其是<strong>自举</strong>这一点：README 用 <code>config.json</code> 转成 <code>dist/README.html</code>，同时验证了程序、配置、文档格式。这种“用一个东西验证它自己”的思路，在编译器、构建工具、测试框架里随处可见。</p>
+<hr>
+<h2 id="_3">三、这个具体实现的独特价值</h2>
+<p>和网上随便一个“Markdown 转 HTML 脚本”相比，本项目的差异化在<strong>4 种图片模式</strong>和<strong>配置驱动</strong>。</p>
+<h3 id="4-4">4 种图片模式覆盖了 4 种真实场景</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>场景</th>
+<th>价值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 不展示</td>
+<td>生成纯文字版、脱敏版</td>
+<td>一份源文件产出多种版本</td>
+</tr>
+<tr>
+<td>2 引用</td>
+<td>HTML 和图片分开部署</td>
+<td>图片可被浏览器缓存，适合网站</td>
+</tr>
+<tr>
+<td>3 data.js</td>
+<td>图片多但 HTML 要轻</td>
+<td>兼顾体积和单文件分发，缓存友好</td>
+</tr>
+<tr>
+<td>4 Base64</td>
+<td>单文件自包含</td>
+<td>随便发、随便拷，永远不裂</td>
+</tr>
+</tbody>
+</table>
+<p>很多工具只支持模式 4 或模式 2，而<strong>“写一次，按场景换一种输出方式”</strong>是这个工具真正的设计亮点。</p>
+<h3 id="_4">配置驱动让它从“脚本”变成“工具”</h3>
+<p>一个 5 行的转换脚本，跑一次就完了。加上 JSON 配置后：</p>
+<ul>
+<li><strong>可复用</strong>：一份配置反复用</li>
+<li><strong>可批量</strong>：<code>jobs</code> 数组一次处理多个文件</li>
+<li><strong>可交接</strong>：配置里带“说明”字段，接手的人知道怎么用</li>
+<li><strong>可扩展</strong>：加新字段不影响老配置</li>
+</ul>
+<p><strong>从“写代码的人自己用”到“别人也能用”，中间隔着的就是配置层。</strong></p>
+<hr>
+<h2 id="_5">四、它不适合什么场景</h2>
+<p>诚实地说，以下情况<strong>不该</strong>用它：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>更合适的工具</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>大型文档站（几百篇）</td>
+<td>Hugo、VitePress、Docusaurus</td>
+<td>需要导航、搜索、主题、多语言</td>
+</tr>
+<tr>
+<td>学术论文/书籍</td>
+<td>Pandoc</td>
+<td>支持 LaTeX、PDF、引用格式</td>
+</tr>
+<tr>
+<td>需要复杂扩展语法</td>
+<td>remark、markdown-it（JS）</td>
+<td>Python-Markdown 插件生态较小</td>
+</tr>
+<tr>
+<td>团队协作平台</td>
+<td>语雀、Notion、飞书</td>
+<td>需要权限、评论、版本历史</td>
+</tr>
+<tr>
+<td>一次性简单转换</td>
+<td>在线工具、<code>pandoc</code> 一行命令</td>
+<td>没必要写代码</td>
+</tr>
+</tbody>
+</table>
+<p><strong>知道“不做什么”和知道“做什么”一样重要。</strong> 这个项目的定位是：<strong>个人/小团队、本地、可控、可定制的 Markdown → HTML 转换</strong>，不追求覆盖所有场景。</p>
+<hr>
+<h2 id="_6">五、总结</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>价值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>工具层</strong></td>
+<td>把 Markdown 变成不依赖平台、可归档、可分发、隐私安全的 HTML</td>
+</tr>
+<tr>
+<td><strong>学习层</strong></td>
+<td>覆盖解析、路径、配置、正则、策略模式、自举验证、文档写作等基本功</td>
+</tr>
+<tr>
+<td><strong>设计层</strong></td>
+<td>4 种图片模式 + JSON 配置，展示“同一功能按场景多种输出”的工程思路</td>
+</tr>
+<tr>
+<td><strong>元技能层</strong></td>
+<td>整个项目从头到尾，是“如何把模糊需求变成可交付成果”的完整示范</td>
+</tr>
+</tbody>
+</table>
+<p>如果只问一句“值不值得做”，答案是：</p>
+<blockquote>
+<p><strong>作为工具，它解决的是小场景；作为学习项目，它串联的是大知识点；作为协作示范，它展示的是完整的“从提问到交付”的路径。</strong></p>
+</blockquote>
+<p>三者叠加，就是一个短小但完整的项目该有的样子。</p>
+
+</body>
+</html>
